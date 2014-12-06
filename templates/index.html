@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Heatmap News</title>
+        <meta charset="UTF-8">
+        <meta name="description" content="Heatmap News is a new way to find important news stories from around the world. It provides a unique perspective by presenting news on a map of the world.">
+        <meta name="keywords" content="news, travel, education, current events">
+        <meta name="author" content="Sam Cordingley">
+        <link href="http://fonts.googleapis.com/css?family=Raleway:400,700|Roboto:400|Roboto+Slab:400,700" rel="stylesheet" type="text/css">
+        {% load staticfiles %}
+        <link rel="icon"
+            type="image/png"
+            href="{% static 'favicon.ico' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'index.css' %}"/>
+    </head>
+    <body>
+        <div id ="map-container">
+            <div id="map-canvas" style="width: 100%; height: 100%"></div>
+        </div>
+        <div id="timeline">
+            <h2>News near <span class="country"></span></h2>
+            <ul id="timeline-list">
+
+            </ul>
+        </div>
+        <div id="banner">
+            <h1 id="title"><a href="/"><span id="thick">HEATMAP</span><span id="thin">NEWS</span></a></h1>
+            <ul id="nav">
+                <li id="refresh">Refresh</li>
+                <li id="date" class="closed">
+                    <div class="name">Go To Date</div>
+                    <div class="content"><span>Date:</span> <input type="text" id="date-input" value="dd/mm/yyyy" onfocus="this.value=''"><div class="button" id="go">Go</div></div>
+                </li>
+                <li id="about">About</li>
+            </ul>
+        </div>
+        <div id="article-window" class="window closed">
+            <h2><a id="article-title"></a></h2>
+            <div id="article"><img id="article-image"/><p id="article-summary"></p></div>
+            <div class="button" id="prev-article">Previous</div><a class="button" id="cluster-link">All related articles</a><div class="button" id="next-article">Next</div>
+        </div>
+
+        <div id="about-window" class="window closed">
+            <h2><a href="http://www.heatmapnews.com">Heatmap News Version 1.1</a></h2>
+            <p>Help:  Click on a hotspot to view news in that area.</p>
+            <p>New in 1.1: News is now collected from every country.</p>
+            <p>News is provided by <a href="http://news.google.com">Google News</a> and has been collecting since 18/08/2014.</p>
+            <p>Please send feedback to <a href="mailto:feedback@heatmapnews.com">feedback@heatmapnews.com</a>.</p>
+        </div>
+
+
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+
+        <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_RwWyPpAisEvXWlXd7dDx--nl2OrMj9g&libraries=visualization">
+        </script>
+        <script type="text/javascript" src="{% static 'index.js' %}"></script>
+
+    </body>
+</html>
