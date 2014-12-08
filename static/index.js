@@ -13,17 +13,17 @@ function getArticle() {
         if (data == "[]") {
             closeWindow($("#article-window"));
             closeWindow($("#about-window"));
-            closeTimeline();
+            closeinfobar();
             return;
         }
         closeWindow($("#about-window"));
-        articles = $.parseJSON(e);
+        articles = $.parseJSON(data);
         var a;
         a = articles[0].fields;
         if (articleIndex === 0) {
             $(".country").text(a.location[0]);
         }
-        viewTimeline();
+        viewinfobar();
         $("#article-image").attr("src", a.image_url);
         $("#article-summary").text(a.summary);
         $("#article-title").text(a.title + " - " + a.provider);
@@ -34,7 +34,7 @@ function getArticle() {
 }
 
 function openWindow(e) {
-    if (e.hasClass("closed")) {
+    if (e.hasClass("is-closed")) {
         e.slideDown({
             duration: 100,
             queue: false
@@ -45,12 +45,12 @@ function openWindow(e) {
             duration: 250,
             queue: false
         });
-        e.addClass("open");
+        e.addClass("is-open");
     }
 }
 
 function closeWindow(e) {
-    if (e.hasClass("open")) {
+    if (e.hasClass("is-open")) {
         e.slideUp({
             duration: 100,
             queue: false
@@ -61,16 +61,16 @@ function closeWindow(e) {
             duration: 100,
             queue: false
         });
-        e.addClass("closed");
+        e.addClass("is-closed");
     }
 }
 
-function viewTimeline() {
-    $("#timeline").slideDown({
+function viewinfobar() {
+    $("#infobar").slideDown({
         duration: 300,
         queue: false
     });
-    $("#timeline").animate({
+    $("#infobar").animate({
         opacity: "0.9"
     }, {
         duration: 25,
@@ -78,7 +78,7 @@ function viewTimeline() {
     });
 }
 
-function getTimeline() {
+function getinfobar() {
     $.get("/news/topArticles/", {
         lat: latLng.lat(),
         lng: latLng.lng()
@@ -92,7 +92,7 @@ function getTimeline() {
         var ds = t.split("T")[0].split("-");
         var fd = ds[2] + "/" + ds[1] + "/" + ds[0];
         for (var i in articles) {
-            $("#timeline-list").append("<li><p>" + articles[i].fields.title + "</p><p>" + fd + "</p></li>");
+            $("#infobar-list").append("<li><p>" + articles[i].fields.title + "</p><p>" + fd + "</p></li>");
         }
     });
 }
@@ -118,7 +118,7 @@ function displayMap() {
     map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
     google.maps.event.addListener(map, "click", function(e) {
         latLng = e.latLng;
-        $("#timeline-list").empty();
+        $("#infobar-list").empty();
         articleIndex = 0;
         getArticle();
     });
@@ -176,8 +176,8 @@ function displayMap() {
             display(articles);
         });
     });
-    $("#timeline-btn").click(function() {
-        getTimeline();
+    $("#infobar-btn").click(function() {
+        getinfobar();
     });
     setStyle(map);
 }
@@ -199,9 +199,9 @@ function displayAboutWindow() {
 }
 
 function openItem(e) {
-    if (e.hasClass("closed")) {
-        e.removeClass("closed");
-        e.addClass("open");
+    if (e.hasClass("is-closed")) {
+        e.removeClass("is-closed");
+        e.addClass("is-open");
         e.animate({
             width: "250px"
         }, 300);
@@ -212,8 +212,8 @@ function closeItem(e) {
     e.animate({
         width: "100px"
     }, 300, function() {
-        e.removeClass("open");
-        e.addClass("closed");
+        e.removeClass("is-open");
+        e.addClass("is-closed");
     });
 }
 
@@ -259,18 +259,18 @@ function timelapse(e) {
                 heatmap.set("opacity", 0.8);
                 new_heatmap.set("opacity", 0);
                 new_heatmap.setData([]);
-                clearInterval(r)
+                clearInterval(r);
             }, 50);
         }
     }, 10);
 }
 
-function closeTimeline() {
-    $("#timeline").slideUp({
+function closeinfobar() {
+    $("#infobar").slideUp({
         duration: 100,
         queue: false
     });
-    $("#timeline").animate({
+    $("#infobar").animate({
         opacity: "0.0"
     }, {
         duration: 100,
@@ -288,13 +288,17 @@ function setStyle(e) {
         }, {
             saturation: -70
         }, {
-            gamma: 0.25
+            gamma: 0.1
         }]
     }, {
         stylers: [{
-            saturation: -70
+            saturation: -75
         }, {
-            gamma: 0.25
+            hue: "#272f32"
+        }, {
+            lightness: -55
+        }, {
+            gamma: 0.8
         }]
     }, {
         elementType: "labels",
@@ -308,6 +312,18 @@ function setStyle(e) {
             visibility: "on"
         }]
     }, {
+        featureType: "administrative",
+        elementType: "labels.text.fill",
+        stylers: [{
+            color: "#9f9f9f"
+        }]
+    }, {
+        featureType: "administrative",
+        elementType: "labels.text.stroke",
+        stylers: [{
+            color: "#3e3e3e"
+        }]
+    }, {
         featureType: "administrative.province",
         elementType: "all",
         stylers: [{
@@ -319,14 +335,14 @@ function setStyle(e) {
     });
     heatmap = new google.maps.visualization.HeatmapLayer();
     heatmap.setMap(e);
-    heatmap.set("opacity", 0.8);
-    heatmap.set("radius", 65);
-    var grad = ["rgba(107, 255, 255, 0)", "rgba(107, 255, 255, 1)", "rgba(107, 255, 154, 1)", "rgba(255, 233, 107, 1)", "rgba(255, 106, 106, 1)"];
+    heatmap.set("opacity", 0.9);
+    heatmap.set("radius", 60);
+    var grad = ["rgba(225, 210, 113, 0)", "rgba(225, 210, 113, 1)", "rgba(251, 248, 234, 1)"];
     heatmap.set("gradient", grad);
     new_heatmap = new google.maps.visualization.HeatmapLayer();
     new_heatmap.setMap(e);
-    new_heatmap.set("opacity", 0.8);
-    new_heatmap.set("radius", 65);
+    new_heatmap.set("opacity", 0.9);
+    new_heatmap.set("radius", 60);
     new_heatmap.set("gradient", grad);
 }
 var heatmap = [];
