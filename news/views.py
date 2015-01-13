@@ -45,50 +45,16 @@ def locations(request):
     minDate = dates[0]
     maxDate = dates[1]
 
-    print(dates)
-
     data = serializers.serialize(
         "json",
         (Article.objects.all()
             .filter(date__range=(minDate, maxDate))
-            .order_by('date')),
+            .order_by('-importance')),
         fields=('importance', 'location'),
         use_natural_keys=True
         )
 
     return HttpResponse(data)
-
-
-def topArticles(request):
-
-    lat = 0
-    lng = 0
-
-    if request.method == 'GET':
-        lat = request.GET['lat']
-        lng = request.GET['lng']
-
-    minLat = float(lat) - 10.0
-    maxLat = float(lat) + 10.0
-
-    minLng = float(lng) - 10.0
-    maxLng = float(lng) + 10.0
-
-    minDate = timezone.now() - timedelta(days=365)
-    maxDate = timezone.now()
-
-    articles = (
-        Article.objects.all()
-        .filter(date__range=(minDate, maxDate),
-                location__latitude__range=(minLat, maxLat),
-                location__longitude__range=(minLng, maxLng))
-        .order_by('importance')[0:3]
-        )
-
-    data = serializers.serialize("json", articles, use_natural_keys=True)
-
-    return HttpResponse(data)
-
 
 def articles(request):
 

@@ -1,4 +1,5 @@
 function initialize() {
+    date = "now";
     displayMap();
     displayArticles();
 }
@@ -21,9 +22,13 @@ function getArticle() {
         var a;
         a = articles[0].fields;
         if (articleIndex === 0) {
-            $(".country").text(a.location[0]);
+            $(".country").text(a.location[0] + " " + date.replace(/-/g, "/"));
         }
         viewinfobar();
+        if (articleIndex == 0)
+            $("#prev-article").hide();
+        else
+            $("#prev-article").show();
         $("#article-image").attr("src", a.image_url);
         $("#article-summary").text(a.summary);
         $("#article-title").text(a.title + " - " + a.provider);
@@ -40,7 +45,7 @@ function openWindow(e) {
             queue: false
         });
         e.animate({
-            opacity: "0.9"
+            opacity: "1.0"
         }, {
             duration: 250,
             queue: false
@@ -138,7 +143,11 @@ function displayMap() {
         displayArticles();
     });
     $("#date").click(function() {
-        openItem($(this));
+        if ($("#date").hasClass("is-closed")) {
+            $("#date-input").focus();
+            $("#date-input").val("DD/MM/YYYY");
+            openItem($(this));
+        }
     });
     $("#date-input").keyup(function(e) {
         var key = e.keyCode || e.which;
@@ -154,6 +163,14 @@ function displayMap() {
     });
     $("#go").click(function() {
         submitDate();
+    });
+    $("#article-close").click(function() {
+        articleIndex = 0;
+        closeWindow($("#article-window"));
+        closeinfobar();
+    });
+    $("#about-close").click(function() {
+        closeWindow($("#about-window"));
     });
     $("#about").click(function() {
         displayAboutWindow();
@@ -187,7 +204,9 @@ function submitDate() {
     var e = /^([0-9][0-9])\/([0-9][0-9])\/([0-9]{3}[1-9])$/;
     if (e.test(dateInput)) {
         date = dateInput.replace(/\//g, "-");
+        closeItem($("#date"));
         displayArticles();
+
     } else {
         window.alert("Please enter a valid date as DD/MM/YYYY.");
     }
@@ -203,8 +222,8 @@ function openItem(e) {
         e.removeClass("is-closed");
         e.addClass("is-open");
         e.animate({
-            width: "250px"
-        }, 300);
+            width: "180px"
+        }, 250);
     }
 }
 
@@ -218,6 +237,9 @@ function closeItem(e) {
 }
 
 function displayArticles() {
+    if (loading)
+        return;
+
     var articles = [];
     $.get("/news/locations/", {
         date: date
@@ -237,8 +259,6 @@ function displayArticles() {
         }
 
         timelapse(new google.maps.MVCArray(points));
-    }).fail(function() {
-        window.alert("Please enter a valid date as DD/MM/YYYY.");
     });
 }
 
@@ -335,20 +355,22 @@ function setStyle(e) {
     });
     heatmap = new google.maps.visualization.HeatmapLayer();
     heatmap.setMap(e);
-    heatmap.set("opacity", 0.9);
-    heatmap.set("radius", 60);
-    var grad = ["rgba(225, 210, 113, 0)", "rgba(225, 210, 113, 1)", "rgba(251, 248, 234, 1)"];
+    heatmap.set("opacity", 0.85);
+    heatmap.set("radius", 45);
+    var grad = ["rgba(224, 176, 94, 0)", "rgba(224, 176, 94, 1)", "rgba(225, 210, 113, 1)", "rgba(251, 238, 200, 1)", "rgba(255, 255, 255, 1)"];
     heatmap.set("gradient", grad);
     new_heatmap = new google.maps.visualization.HeatmapLayer();
     new_heatmap.setMap(e);
-    new_heatmap.set("opacity", 0.9);
-    new_heatmap.set("radius", 60);
+    new_heatmap.set("opacity", 0.85);
+    new_heatmap.set("radius", 45);
     new_heatmap.set("gradient", grad);
 }
+var loading = false;
 var heatmap = [];
 var date = "now";
 var articleIndex = 0;
 var latLng = [];
 var map = [];
 var new_heatmap = [];
-google.maps.event.addDomListener(window, "load", initialize);
+
+$(document).ready(initialize);

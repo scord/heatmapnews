@@ -7,7 +7,7 @@
         <meta name="description" content="Heatmap News is a new way to find important news stories from around the world. It provides a unique perspective by presenting news on a map of the world.">
         <meta name="keywords" content="news, travel, education, current events">
         <meta name="author" content="Sam Cordingley">
-        <link href="http://fonts.googleapis.com/css?family=Play:400,700" rel="stylesheet" type="text/css">
+        <link href="http://fonts.googleapis.com/css?family=Raleway:100,500" rel="stylesheet" type="text/css">
         {% load staticfiles %}
         <link rel="icon"
             type="image/png"
@@ -21,28 +21,34 @@
         <div class="l-header theme-background">
 
             <div class="l-constrained">
-                <h1 class="title"><a href="/"><span id="thick">HEATMAP</span><span id="thin">NEWS</span></a></h1>
-                <ul class="nav">
-                    <li id="refresh">Refresh</li>
-                    <li id="date" class="is-closed">
-                        <div class="name">Go To Date</div>
-                        <div class="content"><span>Date:</span> <input type="text" id="date-input" value="dd/mm/yyyy" onfocus="this.value=''"><div class="button" id="go">Go</div></div>
-                    </li>
-                    <li id="about">About</li>
+                <div class="title"><a href="/"><span id="thick">HEATMAP</span><img class="logo" src="{% static 'logo.png' %}"><span id="thin">NEWS</span></a></div>
+                <ul class="nav l-right">
+                    <li id="refresh">REFRESH
+                    </li><li id="date" class="is-closed">
+                        <div class="name">DATE</div>
+                        <div class="content"><input type="text" id="date-input" value="DD/MM/YYYY" onfocus="this.value=''"> <a id="go">GO</a></div>
+                    </li><li id="about">ABOUT</li>
                 </ul>
             </div>
+            <div id="infobar"><h2>News near <span class="country"></span></h2></div>
         </div>
 
         <div class="l-window theme-background is-closed" id="article-window" >
+            <img class="button" id="article-close" src="{% static 'close.png' %}">
             <h2><a id="article-title"></a></h2>
             <div id="article"><img id="article-image"/><p id="article-summary"></p></div>
-            <div class="button" id="prev-article">Previous</div><a class="button" id="cluster-link">All related articles</a><div class="button" id="next-article">Next</div>
+            <a id="cluster-link">All related articles</a>
+            <div class="l-right">
+                <img src="{% static 'back.png' %}" class="button" id="prev-article">
+                <img src="{% static 'next.png' %}"  class="button" id="next-article">
+            </div>
         </div>
 
         <div class="l-window theme-background is-closed" id="about-window" >
-            <h2><a href="http://www.heatmapnews.com">Heatmap News Version 1.1</a></h2>
+            <img class="button" id="about-close" src="{% static 'close.png' %}">
+            <h2><a href="http://www.heatmapnews.com">Heatmap News Version 2.0</a></h2>
             <p>Help:  Click on a hotspot to view news in that area.</p>
-            <p>New in 1.1: News is now collected from every country.</p>
+            <p>New in 2.0: New look and feel.</p>
             <p>News is provided by <a href="http://news.google.com">Google News</a> and has been collecting since 18/08/2014.</p>
             <p>Please send feedback to <a href="mailto:feedback@heatmapnews.com">feedback@heatmapnews.com</a>.</p>
         </div>
