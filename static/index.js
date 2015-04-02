@@ -6,6 +6,7 @@ function initialize() {
 
 function getArticle() {
     $.get("/news/articles/", {
+
         index: articleIndex,
         date: date,
         lat: latLng.lat(),
@@ -22,7 +23,7 @@ function getArticle() {
         var a;
         a = articles[0].fields;
         if (articleIndex === 0) {
-            $(".country").text(a.location[0] + " " + date.replace(/-/g, "/"));
+            $(".country").text(a.location[0].toUpperCase() + " " + date.replace(/-/g, "/").toUpperCase());
         }
         viewinfobar();
         if (articleIndex == 0)
@@ -76,7 +77,7 @@ function viewinfobar() {
         queue: false
     });
     $("#infobar").animate({
-        opacity: "0.9"
+        opacity: "0.999"
     }, {
         duration: 25,
         queue: false
@@ -108,17 +109,7 @@ function displayMap() {
         zoom: 3,
         minZoom: 3,
         maxZoom: 4,
-        disableDefaultUI: true,
-        mapTypeControl: true,
-        mapTypeControlOptions: {
-            style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-            position: google.maps.ControlPosition.BOTTOM_CENTER
-        },
-        zoomControl: true,
-        zoomControlOptions: {
-            style: google.maps.ZoomControlStyle.SMALL,
-            position: google.maps.ControlPosition.RIGHT_CENTER
-        }
+        disableDefaultUI: true
     };
     map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
     google.maps.event.addListener(map, "click", function(e) {
@@ -145,7 +136,6 @@ function displayMap() {
     $("#date").click(function() {
         if ($("#date").hasClass("is-closed")) {
             $("#date-input").focus();
-            $("#date-input").val("DD/MM/YYYY");
             openItem($(this));
         }
     });
@@ -254,7 +244,7 @@ function displayArticles() {
             latlng = articles[i].fields.location.slice(1, 3);
             points.push({
                 location: new google.maps.LatLng(latlng[0], latlng[1]),
-                weight: Math.pow(articles[i].fields.importance, 0.3 )
+                weight: Math.pow(articles[i].fields.importance, 0.4 )
             });
         }
 
@@ -265,18 +255,18 @@ function displayArticles() {
 function timelapse(e) {
     new_heatmap.set("opacity", 0);
     new_heatmap.setData(e);
-    heatmap.set("opacity", 0.8);
+    heatmap.set("opacity", 0.7);
     var t = 0;
-    var n = 0.8;
+    var n = 0.7;
     var r = setInterval(function() {
         t += 0.01;
         n -= 0.01;
         new_heatmap.set("opacity", t);
         heatmap.set("opacity", n);
-        if (t >= 0.8) {
+        if (t >= 0.7) {
             heatmap.setData(e);
             setTimeout(function() {
-                heatmap.set("opacity", 0.8);
+                heatmap.set("opacity", 0.7);
                 new_heatmap.set("opacity", 0);
                 new_heatmap.setData([]);
                 clearInterval(r);
@@ -299,70 +289,50 @@ function closeinfobar() {
 }
 
 function setStyle(e) {
-    var t = [{
-        featureType: "water",
-        stylers: [{
-            color: "#A3E0FF"
-        }, {
-            lightness: 52
-        }, {
-            saturation: -70
-        }, {
-            gamma: 0.1
-        }]
-    }, {
-        stylers: [{
-            saturation: -75
-        }, {
-            hue: "#272f32"
-        }, {
-            lightness: -55
-        }, {
-            gamma: 0.8
-        }]
-    }, {
-        elementType: "labels",
-        stylers: [{
-            visibility: "on"
-        }]
-    }, {
-        featureType: "administrative",
-        elementType: "geometry",
-        stylers: [{
-            visibility: "on"
-        }]
-    }, {
-        featureType: "administrative",
-        elementType: "labels.text.fill",
-        stylers: [{
-            color: "#9f9f9f"
-        }]
-    }, {
-        featureType: "administrative",
-        elementType: "labels.text.stroke",
-        stylers: [{
-            color: "#3e3e3e"
-        }]
-    }, {
-        featureType: "administrative.province",
-        elementType: "all",
-        stylers: [{
-            visibility: "off"
-        }]
-    }];
+    var t = [
+  {
+    "featureType": "water",
+    "stylers": [
+      { "hue": "#00b2ff" },
+      { "gamma": 0.78 },
+      { "saturation": -84 },
+      { "lightness": -75 }
+    ]
+  },{
+    "featureType": "landscape.natural",
+    "stylers": [
+      { "lightness": 20 },
+      { "saturation": -77 },
+      { "gamma": 0.18 }
+    ]
+  },
+  {
+    "featureType": "administrative",
+    "elementType": "geometry.fill",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  },{
+    "featureType": "water",
+    "elementType": "labels",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  }
+];
     e.setOptions({
         styles: t
     });
     heatmap = new google.maps.visualization.HeatmapLayer();
     heatmap.setMap(e);
-    heatmap.set("opacity", 0.85);
-    heatmap.set("radius", 45);
-    var grad = ["rgba(224, 176, 94, 0)", "rgba(224, 176, 94, 1)", "rgba(225, 210, 113, 1)", "rgba(251, 238, 200, 1)", "rgba(255, 255, 255, 1)"];
+    heatmap.set("opacity", 0.70);
+    heatmap.set("radius", 40);
+    var grad = ["rgba(72, 190, 226, 0)", "rgba(72, 190, 226, 1)", "rgb(100, 203, 230)", "rgb(138, 217, 233)", "rgb(169, 227, 236)", "rgb(202, 232, 237)", "rgb(212, 231, 234)", "rgba(255, 255, 255, 1)"];
     heatmap.set("gradient", grad);
     new_heatmap = new google.maps.visualization.HeatmapLayer();
     new_heatmap.setMap(e);
-    new_heatmap.set("opacity", 0.85);
-    new_heatmap.set("radius", 45);
+    new_heatmap.set("opacity", 0.70);
+    new_heatmap.set("radius", 40);
     new_heatmap.set("gradient", grad);
 }
 var loading = false;
