@@ -30,10 +30,16 @@
             <div class="l-constrained">
                 <div class="title"><a href="/"><span id="thick">HEATMAP</span><img class="logo" src="{% static 'logo.png' %}"><span id="thin">NEWS</span></a></div>
                 <ul class="nav l-right">
-                    <li id="refresh">REFRESH
-                    </li><li id="date" class="is-closed">
-                        <div class="name">DATE</div>
-                        <div class="content"><input type="text" id="date-input" placeholder="DD/MM/YYYY" onfocus="this.value=''"> <a id="go">GO</a></div>
+                    <li id="filter">
+                        DATE
+                        <ul id="filter-menu" class="dropdown">
+                            <li data="hour">LAST HOUR</li>
+                            <li data="day">TODAY</li>
+                            <li data="week">THIS WEEK</li>
+                            <li data="date">
+                                <input type="text" id="date-input" placeholder="DD/MM/YYYY" onfocus="this.value=''"> <a id="go">GO</a>
+                            </li>
+                        </ul>
                     </li><li id="about">ABOUT</li>
                 </ul>
             </div>
@@ -54,9 +60,9 @@
 
         <div class="l-window theme-background is-closed" id="about-window" >
             <img class="button" id="about-close" src="{% static 'close.png' %}">
-            <h2><a href="http://www.heatmapnews.com">Heatmap News Version 3.0</a></h2>
+            <h2><a href="http://www.heatmapnews.com">Heatmap News Version 3.1</a></h2>
             <p>Help:  Click on a hotspot to view news in that area.</p>
-            <p>New in 3.0: New look and feel.</p>
+            <p>New in 3.1: New filter system.</p>
             <p>News is provided by <a href="http://news.google.com">Google News</a> and has been collecting since 18/08/2014.</p>
             <p>Please send feedback to <a href="mailto:feedback@heatmapnews.com">feedback@heatmapnews.com</a>.</p>
         </div>

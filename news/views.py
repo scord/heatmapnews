@@ -15,8 +15,14 @@ def index(request):
 def getDates(date):
     result = ["", ""]
 
-    if date[0] == "now":
+    if date[0] == "hour":
+        result[0] = timezone.now() - timedelta(hours=1)
+        result[1] = timezone.now()
+    elif date[0] == "day":
         result[0] = timezone.now() - timedelta(hours=12)
+        result[1] = timezone.now()
+    elif date[0] == "week":
+        result[0] = timezone.now() - timedelta(days=7)
         result[1] = timezone.now()
     else:
         result[0] = datetime(
@@ -55,6 +61,7 @@ def locations(request):
         )
 
     return HttpResponse(data)
+
 
 def articles(request):
 

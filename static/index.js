@@ -1,11 +1,11 @@
 function initialize() {
-    date = "now";
+    date = "day";
     displayMap();
     displayArticles();
 }
 
 function getArticle() {
-    $.get("/news/articles/", {
+    $.get("/news/articles", {
 
         index: articleIndex,
         date: date,
@@ -23,7 +23,12 @@ function getArticle() {
         var a;
         a = articles[0].fields;
         if (articleIndex === 0) {
-            $(".country").text(a.location[0].toUpperCase() + " " + date.replace(/-/g, "/").toUpperCase());
+            formattedDate = ""
+            if (date == "hour") {formattedDate = "THIS HOUR";}
+            else if (date == "day") {formattedDate = "TODAY";}
+            else if (date == "week") {formattedDate = "THIS WEEK";}
+            else {formattedDate = date.replace(/-/g, "/");}
+            $(".country").text(a.location[0].toUpperCase() + " FROM " + formattedDate);
         }
         viewinfobar();
         if (articleIndex == 0)
@@ -85,7 +90,7 @@ function viewinfobar() {
 }
 
 function getinfobar() {
-    $.get("/news/topArticles/", {
+    $.get("/news/topArticles", {
         lat: latLng.lat(),
         lng: latLng.lng()
     }, function(data) {
@@ -128,17 +133,7 @@ function displayMap() {
         articleIndex -= 1;
         getArticle();
     });
-    $("#refresh").click(function() {
-        date = "now";
-        closeItem($("#date"));
-        displayArticles();
-    });
-    $("#date").click(function() {
-        if ($("#date").hasClass("is-closed")) {
-            $("#date-input").focus();
-            openItem($(this));
-        }
-    });
+
     $("#date-input").keyup(function(e) {
         var key = e.keyCode || e.which;
         if (key == 13) {
@@ -164,6 +159,46 @@ function displayMap() {
     });
     $("#about").click(function() {
         displayAboutWindow();
+    });
+    $("#filter-menu li").click(function(e) {
+        date = $(e.target).attr("data");
+        if (date == "day" || date == "week" || date == "hour") {
+        displayArticles();
+        $("#filter-menu").slideUp({
+            duration: 200,
+            queue: false
+        });
+        $("#filter-menu").animate({
+            opacity: "0.0"
+        }, {
+            duration: 250,
+            queue: false
+        });
+      }
+    });
+    $("#filter").hover(function() {
+        $("#filter-menu").slideDown({
+            duration: 200,
+            queue: false
+        });
+        $("#filter-menu").animate({
+            opacity: "1.0"
+        }, {
+            duration: 250,
+            queue: false
+        });
+    },
+    function() {
+        $("#filter-menu").slideUp({
+            duration: 200,
+            queue: false
+        });
+        $("#filter-menu").animate({
+            opacity: "0.0"
+        }, {
+            duration: 250,
+            queue: false
+        });
     });
     $("#back").click(function() {
         days += 1;
@@ -194,8 +229,17 @@ function submitDate() {
     var e = /^([0-9][0-9])\/([0-9][0-9])\/([0-9]{3}[1-9])$/;
     if (e.test(dateInput)) {
         date = dateInput.replace(/\//g, "-");
-        closeItem($("#date"));
         displayArticles();
+        $("#filter-menu").slideUp({
+            duration: 200,
+            queue: false
+        });
+        $("#filter-menu").animate({
+            opacity: "0.0"
+        }, {
+            duration: 250,
+            queue: false
+        });
 
     } else {
         window.alert("Please enter a valid date as DD/MM/YYYY.");
@@ -231,7 +275,7 @@ function displayArticles() {
         return;
 
     var articles = [];
-    $.get("/news/locations/", {
+    $.get("/news/locations", {
         date: date
     }, function(t) {
         if (t == "[]") {
@@ -239,12 +283,21 @@ function displayArticles() {
             return;
         }
         articles = $.parseJSON(t);
+        var locs = {};
+        var weights = {};
         var points = [];
         for (var i in articles) {
             latlng = articles[i].fields.location.slice(1, 3);
+
+            weights[latlng] ? weights[latlng] += articles[i].fields.importance : weights[latlng] = articles[i].fields.importance;
+            locs[latlng] = latlng;
+
+        }
+
+        for (var key in locs) {
             points.push({
-                location: new google.maps.LatLng(latlng[0], latlng[1]),
-                weight: Math.pow(articles[i].fields.importance, 0.4 )
+                location: new google.maps.LatLng(locs[key][0], locs[key][1]),
+                weight: Math.pow(weights[key], 0.4 )
             });
         }
 
@@ -255,18 +308,18 @@ function displayArticles() {
 function timelapse(e) {
     new_heatmap.set("opacity", 0);
     new_heatmap.setData(e);
-    heatmap.set("opacity", 0.7);
+    heatmap.set("opacity", 0.8);
     var t = 0;
-    var n = 0.7;
+    var n = 0.8;
     var r = setInterval(function() {
         t += 0.01;
         n -= 0.01;
         new_heatmap.set("opacity", t);
         heatmap.set("opacity", n);
-        if (t >= 0.7) {
+        if (t >= 0.8) {
             heatmap.setData(e);
             setTimeout(function() {
-                heatmap.set("opacity", 0.7);
+                heatmap.set("opacity", 0.8);
                 new_heatmap.set("opacity", 0);
                 new_heatmap.setData([]);
                 clearInterval(r);
@@ -325,19 +378,19 @@ function setStyle(e) {
     });
     heatmap = new google.maps.visualization.HeatmapLayer();
     heatmap.setMap(e);
-    heatmap.set("opacity", 0.70);
+    heatmap.set("opacity", 0.80);
     heatmap.set("radius", 40);
     var grad = ["rgba(72, 190, 226, 0)", "rgba(72, 190, 226, 1)", "rgb(100, 203, 230)", "rgb(138, 217, 233)", "rgb(169, 227, 236)", "rgb(202, 232, 237)", "rgb(212, 231, 234)", "rgba(255, 255, 255, 1)"];
     heatmap.set("gradient", grad);
     new_heatmap = new google.maps.visualization.HeatmapLayer();
     new_heatmap.setMap(e);
-    new_heatmap.set("opacity", 0.70);
+    new_heatmap.set("opacity", 0.80);
     new_heatmap.set("radius", 40);
     new_heatmap.set("gradient", grad);
 }
 var loading = false;
 var heatmap = [];
-var date = "now";
+var date = "day";
 var articleIndex = 0;
 var latLng = [];
 var map = [];
